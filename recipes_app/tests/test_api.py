@@ -132,3 +132,10 @@ class RecipeAPITestCaseHappy(BaseRecipeAPITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["id"], recipe.id)
         self.assertEqual(response.data["title"], recipe.title)
+
+    def test_recipe_str_returns_title(self):
+        """
+        __str__ of Recipe should return the title.
+        """
+        recipe = self.create_recipe(title="My Test Recipe")
+        self.assertEqual(str(recipe), "My Test Recipe")
