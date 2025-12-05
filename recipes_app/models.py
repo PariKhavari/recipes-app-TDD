@@ -4,8 +4,9 @@ from django.contrib.auth.models import User
 
 class Recipe(models.Model):
     """
-    Einfaches Rezept-Modell.
+    Simple recipe model.
     """
+    
     title = models.CharField(max_length=100)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

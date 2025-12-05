@@ -6,12 +6,12 @@ from .serializers import RecipeSerializer
 
 class RecipeViewSet(viewsets.ModelViewSet):
     """
-    Vollständiges CRUD-ViewSet für Rezepte.
-    (Auth & Permissions fügen wir später hinzu.)
+    Full CRUD ViewSet for Recipe model.
     """
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
+
 
 

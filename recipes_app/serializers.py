@@ -4,7 +4,7 @@ from .models import Recipe
 
 class RecipeSerializer(serializers.ModelSerializer):
     """
-    Serializer für das Recipe-Modell.
+    Serializer for the Recipe model.
     """
 
     class Meta:

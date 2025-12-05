@@ -9,27 +9,33 @@ from recipes_app.models import Recipe
 
 class BaseRecipeAPITestCase(APITestCase):
     """
-    Basisklasse, die gemeinsam genutzte Objekte bereitstellt.
+    Base test class that provides shared setup and helper methods
+    for the Recipe API tests.
     """
 
     def setUp(self):
+        """
+        Runs before each test method.
+        Creates a default user, token and stores commonly used URLs.
+        """
         self.user = User.objects.create_user(
             username="testuser",
             password="testpassword123",
         )
+
         self.token = Token.objects.create(user=self.user)
 
         self.list_url = reverse("recipes-list")
 
     def authenticate(self):
         """
-        Setzt das Token im Authorization-Header.
+        Attach the token to the HTTP Authorization header for authenticated requests.
         """
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token.key}")
 
     def create_recipe(self, author=None, title="Test-Rezept", description="Beschreibung"):
         """
-        Hilfsfunktion, um ein Rezept in Tests anzulegen.
+        Helper method to create a Recipe instance for tests.
         """
         if author is None:
             author = self.user
@@ -42,12 +48,13 @@ class BaseRecipeAPITestCase(APITestCase):
 
 class RecipeAPITestCaseUnhappy(BaseRecipeAPITestCase):
     """
-    Unhappy-Path-Tests: ohne oder mit falscher Authentifizierung.
+    Unhappy path tests: requests without valid authentication.
     """
 
     def test_post_recipe_without_auth_returns_401(self):
         """
-        Ein POST ohne Authentifizierung soll 401 Unauthorized liefern.
+        POST without authentication should return 401 Unauthorized
+        and must NOT create a recipe.
         """
         payload = {
             "title": "Unerlaubtes Rezept",
@@ -62,7 +69,7 @@ class RecipeAPITestCaseUnhappy(BaseRecipeAPITestCase):
 
     def test_get_recipe_detail_without_auth_returns_401(self):
         """
-       Detailabruf ohne Auth gibt 401 Unauthorized.
+        GET /recipes-detail/<id>/ without authentication should return 401 Unauthorized.
         """
         recipe = self.create_recipe()
 
@@ -74,13 +81,13 @@ class RecipeAPITestCaseUnhappy(BaseRecipeAPITestCase):
 
 class RecipeAPITestCaseHappy(BaseRecipeAPITestCase):
     """
-    Happy-Path-Tests: mit gültiger Authentifizierung.
+    Happy path tests: requests with valid authentication.
     """
 
     def test_get_recipes_list_with_auth_returns_200_and_empty_list(self):
         """
-        Als eingeloggter User soll GET /recipes-list/ 200 OK und eine Liste liefern.
-        (zu diesem Zeitpunkt noch leer)
+        As an authenticated user, GET /recipes-list/ should return 200 OK
+        and an empty list when no recipes exist.
         """
         self.authenticate()
         response = self.client.get(self.list_url)
@@ -90,7 +97,8 @@ class RecipeAPITestCaseHappy(BaseRecipeAPITestCase):
 
     def test_post_recipe_with_auth_returns_201_and_creates_recipe(self):
         """
-       Als eingeloggter User ein Rezept erstellen (201 Created).
+        As an authenticated user, POST to /recipes-list/ should create a recipe
+        and return 201 Created.
         """
         self.authenticate()
 
@@ -111,7 +119,8 @@ class RecipeAPITestCaseHappy(BaseRecipeAPITestCase):
 
     def test_get_recipe_detail_with_auth_returns_200(self):
         """
-        Aufgabe 6: Rezept-Detail als eingeloggter User abrufen (200 OK).
+        As an authenticated user, GET /recipes-detail/<id>/ should return 200 OK
+        and the correct recipe data.
         """
         recipe = self.create_recipe()
 
